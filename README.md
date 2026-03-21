@@ -23,10 +23,9 @@ Once authenticated, they can interact with the AI chatbot.
 Messages are processed through the backend and responses are generated.
 Chat history is stored in MongoDB, allowing users to revisit past conversations.
 
-<img width="1843" height="1005" alt="Screenshot 2026-03-21 232051" src="https://github.com/user-attachments/assets/9963fdd3-4fa4-4884-ae5f-5b1c1d0f0f83" />
-<img width="1906" height="941" alt="Screenshot 2026-03-21 231829" src="https://github.com/user-attachments/assets/c746746c-aa92-4257-b55b-691fe27816a7" />
 <img width="1907" height="941" alt="Screenshot 2026-03-21 231802" src="https://github.com/user-attachments/assets/41af3dcf-09eb-4082-a73e-0c4774684915" />
-
+<img width="1906" height="941" alt="Screenshot 2026-03-21 231829" src="https://github.com/user-attachments/assets/c746746c-aa92-4257-b55b-691fe27816a7" />
+<img width="1843" height="1005" alt="Screenshot 2026-03-21 232051" src="https://github.com/user-attachments/assets/9963fdd3-4fa4-4884-ae5f-5b1c1d0f0f83" />
 
 ▶️ How to Run
 Clone the repository
