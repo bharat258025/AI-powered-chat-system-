@@ -4,6 +4,7 @@ This project is an AI-powered chat application built using modern JavaScript tec
 conversations with an intelligent chatbot while maintaining secure authentication and persistent chat history.
 
 🚀 Features
+
 AI-based conversational chat interface
 Secure user authentication and login system
 Persistent chat history stored in MongoDB
@@ -12,12 +13,14 @@ Responsive and user-friendly UI
 Scalable backend architecture
 
 🛠️ Tech Stack
+
 Frontend: React.js
 Backend: Node.js, Express.js
 Database: MongoDB
 Authentication: Secure login & session handling
 
 📂 How It Works
+
 Users can sign up and log in securely.
 Once authenticated, they can interact with the AI chatbot.
 Messages are processed through the backend and responses are generated.
