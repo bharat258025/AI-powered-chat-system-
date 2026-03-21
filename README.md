@@ -15,9 +15,9 @@ Scalable backend architecture
 🛠️ Tech Stack
 
 Frontend: React.js
+
 Backend: Node.js, Express.js
 Database: MongoDB
-Authentication: Secure login & session handling
 
 📂 How It Works
 
@@ -31,24 +31,36 @@ Chat history is stored in MongoDB, allowing users to revisit past conversations.
 <img width="1843" height="1005" alt="Screenshot 2026-03-21 232051" src="https://github.com/user-attachments/assets/9963fdd3-4fa4-4884-ae5f-5b1c1d0f0f83" />
 
 ▶️ How to Run
+
 Clone the repository
 Navigate to the project directory
 
 Backend Setup:
+
 cd backend
+
 npm install
+
 npm start
 
 Frontend Setup:
+
 cd frontend
+
 npm install
+
 npm start
+
 Open your browser and go to http://localhost:5173
 
 📌 Future Improvements
+
 Integrate more advanced AI models
+
 Implement user profile customization
+
 Improve UI/UX with animations and themes
 
 🙌 Acknowledgment
+
 This project was developed to explore full-stack development and AI integration using the MERN stack, inspired by modern conversational AI platforms.
