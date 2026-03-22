@@ -19,48 +19,48 @@ Frontend: React.js
 Backend: Node.js, Express.js
 Database: MongoDB
 
-📂 How It Works
+📂 How It Works  
 
-Users can sign up and log in securely.
-Once authenticated, they can interact with the AI chatbot.
-Messages are processed through the backend and responses are generated.
-Chat history is stored in MongoDB, allowing users to revisit past conversations.
+Users can sign up and log in securely.  
+Once authenticated, they can interact with the AI chatbot.  
+Messages are processed through the backend and responses are generated.  
+Chat history is stored in MongoDB, allowing users to revisit past conversations.  
 
 <img width="1907" height="941" alt="Screenshot 2026-03-21 231802" src="https://github.com/user-attachments/assets/41af3dcf-09eb-4082-a73e-0c4774684915" />
 <img width="1906" height="941" alt="Screenshot 2026-03-21 231829" src="https://github.com/user-attachments/assets/c746746c-aa92-4257-b55b-691fe27816a7" />
 <img width="1843" height="1005" alt="Screenshot 2026-03-21 232051" src="https://github.com/user-attachments/assets/9963fdd3-4fa4-4884-ae5f-5b1c1d0f0f83" />
 
-▶️ How to Run
+▶️ How to Run  
 
-Clone the repository
-Navigate to the project directory
+Clone the repository  
+Navigate to the project directory    
 
-Backend Setup:
+Backend Setup:  
 
-cd backend
+cd backend  
 
-npm install
+npm install  
 
-npm start
+npm start  
 
-Frontend Setup:
+Frontend Setup:  
 
-cd frontend
+cd frontend  
 
-npm install
+npm install  
 
-npm start
+npm start  
 
-Open your browser and go to http://localhost:5173
+Open your browser and go to http://localhost:5173  
 
-📌 Future Improvements
+📌 Future Improvements  
 
-Integrate more advanced AI models
+Integrate more advanced AI models  
 
-Implement user profile customization
+Implement user profile customization  
 
-Improve UI/UX with animations and themes
+Improve UI/UX with animations and themes  
 
-🙌 Acknowledgment
+🙌 Acknowledgment  
 
 This project was developed to explore full-stack development and AI integration using the MERN stack, inspired by modern conversational AI platforms.
