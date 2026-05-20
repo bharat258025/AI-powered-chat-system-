@@ -22,7 +22,11 @@ const sendOtpEmail = async (email, otp) => {
     host,
     port,
     secure: port === 465,
+    family: 4,
     auth: { user, pass },
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 20000,
   });
 
   await transporter.sendMail({
@@ -70,10 +74,17 @@ export const requestSignupOtp = async (req, res) => {
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );
 
+    // Verify OTP persistence before attempting email send.
+    const savedOtpRecord = await SignupOtp.findOne({ email: normalizedEmail });
+    if (!savedOtpRecord) {
+      return res.status(500).json({ errors: "Failed to persist OTP. Please try again." });
+    }
+
     const mailStatus = await sendOtpEmail(normalizedEmail, otp);
     if (!mailStatus.delivered) {
-      return res.status(500).json({
-        errors: "OTP email could not be sent. Please check SMTP settings.",
+      return res.status(202).json({
+        message:
+          "OTP saved, but email delivery is delayed/failed. Please check SMTP settings and retry.",
       });
     }
 
