@@ -37,6 +37,9 @@ const sendOtpEmail = async (email, otp) => {
         message: error?.message,
         status: error?.response?.status,
         data: error?.response?.data,
+        keyLoaded: Boolean(brevoApiKey),
+        keyLength: brevoApiKey ? brevoApiKey.trim().length : 0,
+        keyPrefix: brevoApiKey ? brevoApiKey.trim().slice(0, 8) : "",
         from,
         to: email,
       });
