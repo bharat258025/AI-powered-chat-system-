@@ -4,17 +4,52 @@ import bcrypt from "bcryptjs";
 import config from "../config.js";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
+import axios from "axios";
 
 const generateOtp = () => String(Math.floor(100000 + Math.random() * 900000));
 
 const sendOtpEmail = async (email, otp) => {
+  const brevoApiKey = process.env.BREVO_API_KEY;
+  const from = process.env.SMTP_FROM;
+
+  // Prefer Brevo HTTP API in production to avoid SMTP port timeout issues.
+  if (brevoApiKey && from) {
+    try {
+      await axios.post(
+        "https://api.brevo.com/v3/smtp/email",
+        {
+          sender: { email: from, name: "DeepSeek OTP" },
+          to: [{ email }],
+          subject: "Your OTP for Signup",
+          textContent: `Your OTP is ${otp}. It expires in 10 minutes.`,
+        },
+        {
+          headers: {
+            "api-key": brevoApiKey,
+            "Content-Type": "application/json",
+          },
+          timeout: 20000,
+        }
+      );
+      return { delivered: true };
+    } catch (error) {
+      console.log("Brevo API send failed:", {
+        message: error?.message,
+        status: error?.response?.status,
+        data: error?.response?.data,
+        from,
+        to: email,
+      });
+    }
+  }
+
   const host = process.env.SMTP_HOST;
   const port = Number(process.env.SMTP_PORT || 587);
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
-  const from = process.env.SMTP_FROM || user;
+  const smtpFrom = process.env.SMTP_FROM || user;
 
-  if (!host || !user || !pass || !from) {
+  if (!host || !user || !pass || !smtpFrom) {
     return { delivered: false };
   }
 
@@ -31,7 +66,7 @@ const sendOtpEmail = async (email, otp) => {
 
   try {
     await transporter.sendMail({
-      from,
+      from: smtpFrom,
       to: email,
       subject: "Your OTP for Signup",
       text: `Your OTP is ${otp}. It expires in 10 minutes.`,
@@ -46,7 +81,7 @@ const sendOtpEmail = async (email, otp) => {
       command: error?.command,
       host,
       port,
-      from,
+      from: smtpFrom,
       to: email,
     });
     return { delivered: false, reason: error?.message || "Email delivery failed" };
