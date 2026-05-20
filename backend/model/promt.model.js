@@ -6,6 +6,11 @@ const promtSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  chatId: {
+    type: String,
+    required: true,
+    index: true,
+  },
   role: {
     type: String,
     enum: ["user", "assistant"],

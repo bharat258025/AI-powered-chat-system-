@@ -6,6 +6,7 @@ import cors from "cors";
 
 import userRoutes from "./routes/user.route.js";
 import promtRoutes from "./routes/promt.route.js";
+import { User } from "./model/user.model.js";
 
 dotenv.config();
 
@@ -13,26 +14,42 @@ const app = express();
 const port = process.env.PORT || 4001;
 const MONGO_URL = process.env.MONGO_URI;
 
-// middleware
 app.use(express.json());
 app.use(cookieParser());
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: (origin, cb) => {
+      if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+      return cb(new Error("Not allowed by CORS"));
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
-// DB Connection Code Goes Here!!!!
 mongoose
   .connect(MONGO_URL)
-  .then(() => console.log("Connected to MongoDB"))
+  .then(async () => {
+    console.log("Connected to MongoDB");
+    try {
+      await User.collection.dropIndex("username_1");
+      console.log("Dropped stale index: username_1");
+    } catch (error) {
+      const indexMissing = error?.codeName === "IndexNotFound" || error?.code === 27;
+      if (!indexMissing) {
+        console.log("Index cleanup warning:", error.message);
+      }
+    }
+  })
   .catch((error) => console.error("MongoDB Connection Error: ", error));
 
-// routes
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/deepseekai", promtRoutes);
 
