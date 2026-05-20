@@ -1,5 +1,5 @@
 import { Eye } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -11,6 +11,21 @@ function Signup() {
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
   const navigate = useNavigate();
+  const otpInputRef = useRef(null);
+
+  useEffect(() => {
+    const pendingEmail = sessionStorage.getItem("pendingOtpEmail");
+    if (pendingEmail) {
+      setFormData((prev) => ({ ...prev, email: pendingEmail }));
+      setOtpSent(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (otpSent) {
+      setTimeout(() => otpInputRef.current?.focus(), 0);
+    }
+  }, [otpSent]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,6 +45,7 @@ function Signup() {
         },
         { withCredentials: true }
       );
+      sessionStorage.setItem("pendingOtpEmail", formData.email.trim().toLowerCase());
       setOtpSent(true);
       alert(data.message || "OTP sent");
     } catch (error) {
@@ -53,6 +69,7 @@ function Signup() {
         { email: formData.email.trim().toLowerCase(), otp: otp.trim() },
         { withCredentials: true }
       );
+      sessionStorage.removeItem("pendingOtpEmail");
       alert(data.message || "Signup successful");
       navigate("/login");
     } catch (error) {
@@ -71,7 +88,7 @@ function Signup() {
         <div className="mb-4 mt-2"><input className="w-full bg-transparent border border-gray-600 rounded-md px-4 py-3 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-[#7a6ff0]" type="text" name="email" placeholder="email" value={formData.email} onChange={handleChange} /></div>
         <div className="mb-4 mt-2 relative"><input className="w-full bg-transparent border border-gray-600 rounded-md px-4 py-3 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-[#7a6ff0]" type="password" name="password" placeholder="password" value={formData.password} onChange={handleChange} /><span className=" absolute right-3 top-3 text-gray-400"><Eye size={18} /></span></div>
         <p className="text-xs text-gray-400 mt-4 mb-6">By signing up or logging in, you consent to DeepSeek's <a className="underline" href="#" onClick={(e) => e.preventDefault()}>Terms of Use</a> and <a className=" underline" href="#" onClick={(e) => e.preventDefault()}>Privacy Policy</a>.</p>
-        {otpSent && <div className="mb-4 mt-2"><input className="w-full bg-transparent border border-gray-600 rounded-md px-4 py-3 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-[#7a6ff0]" type="text" name="otp" placeholder="Enter OTP" value={otp} onChange={(e) => setOtp(e.target.value)} /></div>}
+        {otpSent && <div className="mb-4 mt-2"><input ref={otpInputRef} className="w-full bg-transparent border border-gray-600 rounded-md px-4 py-3 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-[#7a6ff0]" type="text" name="otp" placeholder="Enter OTP" value={otp} onChange={(e) => setOtp(e.target.value)} /></div>}
         <button onClick={otpSent ? handleVerifyOtp : handleRequestOtp} disabled={loading} className=" w-full bg-[#7a6ff6] hover:bg-[#6c61a6] text-white font-semibold py-3 rounded-lg transition disabled:opacity-50">{loading ? "Please wait... " : otpSent ? "Verify OTP" : "Send OTP"}</button>
         <div className="flex justify-between mt-4 text-sm"><a className="text-[#7a6ff6] hover:underline" href="#" onClick={(e) => e.preventDefault()}>Already registered?</a><Link className="text-[#7a6ff6] hover:underline" to="/login">Login</Link></div>
       </div>

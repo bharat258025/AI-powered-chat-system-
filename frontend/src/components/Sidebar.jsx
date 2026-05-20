@@ -14,23 +14,40 @@ function Sidebar({ onClose, selectedChatId, onSelectChat }) {
   const [chats, setChats] = useState([]);
   const [editingChatId, setEditingChatId] = useState(null);
   const [editingTitle, setEditingTitle] = useState("");
+  const token = localStorage.getItem("token");
 
   const chatsKey = useMemo(() => (user?._id ? `chatSessions_${user._id}` : null), [user?._id]);
 
   useEffect(() => {
-    if (!chatsKey) return;
-    const syncChats = () => {
-      const stored = JSON.parse(localStorage.getItem(chatsKey) || "[]");
-      setChats(stored.sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || "")));
+    const loadChats = async () => {
+      if (!chatsKey || !token || !user?._id) return;
+      try {
+        const { data } = await axios.get(`${API_URL}/api/v1/deepseekai/chats`, {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        });
+        const dbChats = data?.chats || [];
+        localStorage.setItem(chatsKey, JSON.stringify(dbChats));
+        setChats(dbChats);
+
+        const selectedKey = `selectedChat_${user._id}`;
+        const currentSelected = localStorage.getItem(selectedKey);
+        const hasSelected = dbChats.some((chat) => chat.id === currentSelected);
+        if (!currentSelected || !hasSelected) {
+          const firstChatId = dbChats[0]?.id || null;
+          if (firstChatId) {
+            localStorage.setItem(selectedKey, firstChatId);
+            onSelectChat(firstChatId);
+          }
+        }
+      } catch {
+        const stored = JSON.parse(localStorage.getItem(chatsKey) || "[]");
+        setChats(stored.sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || "")));
+      }
     };
-    syncChats();
-    window.addEventListener("storage", syncChats);
-    const interval = setInterval(syncChats, 400);
-    return () => {
-      window.removeEventListener("storage", syncChats);
-      clearInterval(interval);
-    };
-  }, [chatsKey]);
+
+    loadChats();
+  }, [chatsKey, token, user?._id, onSelectChat]);
 
   const handleLogout = async () => {
     try {
@@ -93,7 +110,6 @@ function Sidebar({ onClose, selectedChatId, onSelectChat }) {
       onSelectChat(nextSelected);
     }
 
-    const token = localStorage.getItem("token");
     axios.delete(`${API_URL}/api/v1/deepseekai/chat/${chatId}`, {
       headers: { Authorization: `Bearer ${token}` },
       withCredentials: true,

@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import axios from "axios";
 import { Promt } from "../model/promt.model.js";
+import mongoose from "mongoose";
 
 const groq = new OpenAI({
   baseURL: "https://api.groq.com/openai/v1",
@@ -106,6 +107,62 @@ export const deleteChatPromts = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       error: error?.message || "Failed to delete chat",
+    });
+  }
+};
+
+export const getUserChats = async (req, res) => {
+  try {
+    const userId = new mongoose.Types.ObjectId(req.userId);
+
+    const chats = await Promt.aggregate([
+      { $match: { userId } },
+      { $sort: { createdAt: -1 } },
+      {
+        $group: {
+          _id: "$chatId",
+          updatedAt: { $first: "$createdAt" },
+          lastUserMessage: {
+            $first: {
+              $cond: [{ $eq: ["$role", "user"] }, "$content", null],
+            },
+          },
+        },
+      },
+      { $sort: { updatedAt: -1 } },
+    ]);
+
+    return res.status(200).json({
+      chats: chats.map((chat) => ({
+        id: chat._id,
+        title: (chat.lastUserMessage || "New Chat").slice(0, 60),
+        updatedAt: chat.updatedAt,
+      })),
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: error?.message || "Failed to fetch chats",
+    });
+  }
+};
+
+export const getChatMessages = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { chatId } = req.params;
+
+    if (!chatId) {
+      return res.status(400).json({ error: "chatId is required" });
+    }
+
+    const messages = await Promt.find({ userId, chatId })
+      .sort({ createdAt: 1 })
+      .select("role content createdAt -_id");
+
+    return res.status(200).json({ messages });
+  } catch (error) {
+    return res.status(500).json({
+      error: error?.message || "Failed to fetch chat messages",
     });
   }
 };

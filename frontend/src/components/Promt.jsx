@@ -17,12 +17,33 @@ function Promt({ selectedChatId }) {
   const promtEndRef = useRef();
   const user = useMemo(() => JSON.parse(localStorage.getItem("user") || "null"), []);
   const chatsKey = useMemo(() => (user?._id ? `chatSessions_${user._id}` : null), [user?._id]);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    if (!chatsKey || !selectedChatId) return setPromt([]);
-    const chats = JSON.parse(localStorage.getItem(chatsKey) || "[]");
-    setPromt(chats.find((chat) => chat.id === selectedChatId)?.messages || []);
-  }, [chatsKey, selectedChatId]);
+    const loadMessages = async () => {
+      if (!selectedChatId) {
+        setPromt([]);
+        return;
+      }
+
+      try {
+        const { data } = await axios.get(
+          `${API_URL}/api/v1/deepseekai/chat/${selectedChatId}/messages`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+          }
+        );
+        setPromt(data?.messages || []);
+      } catch {
+        if (!chatsKey) return setPromt([]);
+        const chats = JSON.parse(localStorage.getItem(chatsKey) || "[]");
+        setPromt(chats.find((chat) => chat.id === selectedChatId)?.messages || []);
+      }
+    };
+
+    loadMessages();
+  }, [chatsKey, selectedChatId, token]);
 
   useEffect(() => {
     promtEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -50,7 +71,6 @@ function Promt({ selectedChatId }) {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
       const { data } = await axios.post(
         `${API_URL}/api/v1/deepseekai/promt`,
         { content: trimmed, chatId: selectedChatId || "" },
