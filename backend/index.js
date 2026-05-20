@@ -55,6 +55,10 @@ mongoose
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/deepseekai", promtRoutes);
 
-app.listen(port, () => {
+app.get("/health", (req, res) => {
+  return res.status(200).json({ ok: true });
+});
+
+app.listen(port, "0.0.0.0", () => {
   console.log(`Server is running on port ${port}`);
 });
