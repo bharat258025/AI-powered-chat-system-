@@ -1,66 +1,146 @@
-🤖 AI-Powered Chat System
+# AI-Powered Chat System
 
-This project is an AI-powered chat application built using modern JavaScript technologies. Inspired by systems like DeepSeek AI, it allows users to have interactive
-conversations with an intelligent chatbot while maintaining secure authentication and persistent chat history.
+AI-Powered Chat System is a full-stack chat app inspired by modern AI assistants.  
+It includes authentication, OTP-based signup, persistent per-user chat history, and production-ready deployment setup.
 
-🚀 Features
+## Features
 
-AI-based conversational chat interface
-Secure user authentication and login system
-Persistent chat history stored in MongoDB
-Real-time messaging experience
-Responsive and user-friendly UI
-Scalable backend architecture
+- JWT-based authentication (`login`, `logout`)
+- OTP-based signup flow (`request OTP` -> `verify OTP`)
+- AI response generation using Groq
+- Web search context with Serper before LLM response
+- Per-chat session history persisted in MongoDB
+- Chat list + message history loaded from database in UI
+- Rename chat title manually
+- Delete chat session 
+- Profile popup with user name and email
+- Responsive dark UI for desktop/mobile
+- Deployment-ready frontend/backend env setup
 
-🛠️ Tech Stack
+## Tech Stack
 
-Frontend: React.js
+- Frontend: React, Tailwind CSS
+- Backend: Node.js, Express.js
+- Database: MongoDB Atlas
+- AI Provider: Groq
+- Search Provider: Serper
+- OTP Delivery: Brevo API
 
-Backend: Node.js, Express.js
-Database: MongoDB
+## Project Structure
 
-📂 How It Works  
+```text
+AI-powered-chat-system-/
+  README.md
+backend/
+    controller/
+    middleware/
+    model/
+    routes/
+    config.js
+    index.js
+    package.json
+frontend/
+    src/
+      components/
+      context/
+      App.jsx
+      main.jsx
+    package.json
+```
 
-Users can sign up and log in securely.  
-Once authenticated, they can interact with the AI chatbot.  
-Messages are processed through the backend and responses are generated.  
-Chat history is stored in MongoDB, allowing users to revisit past conversations.  
+## Environment Variables
 
-<img width="1907" height="941" alt="Screenshot 2026-03-21 231802" src="https://github.com/user-attachments/assets/41af3dcf-09eb-4082-a73e-0c4774684915" />
-<img width="1906" height="941" alt="Screenshot 2026-03-21 231829" src="https://github.com/user-attachments/assets/c746746c-aa92-4257-b55b-691fe27816a7" />
-<img width="1843" height="1005" alt="Screenshot 2026-03-21 232051" src="https://github.com/user-attachments/assets/9963fdd3-4fa4-4884-ae5f-5b1c1d0f0f83" />
+### Backend (`backend/.env`)
 
-▶️ How to Run  
+```env
+MONGO_URI=your_mongodb_connection_string
+JWT_PASSWORD=your_jwt_secret
+NODE_ENV=production_or_development
+PORT=4002
 
-Clone the repository  
-Navigate to the project directory    
+GROQ_API_KEY=your_groq_api_key
+LLM_MODEL=llama-3.3-70b-versatile
+SERPER_API_KEY=your_serper_api_key
 
-Backend Setup:  
+FRONTEND_URL=https://your_url.onrender.com(for production)
 
-cd backend  
+# Preferred OTP mode (Brevo HTTP API)
+BREVO_API_KEY=your_brevo_api_key
+SMTP_FROM=verified_sender_email@example.com
 
-npm install  
+```
 
-npm start  
+### Frontend (`frontend/.env`)
 
-Frontend Setup:  
+```env
+VITE_API_URL=https://your_url.onrender.com(for production)
+```
 
-cd frontend  
+## Local Development
 
-npm install  
+### 1) Install dependencies
 
-npm start  
+```bash
+cd backend
+npm install
 
-Open your browser and go to http://localhost:5173  
+cd ../frontend
+npm install
+```
 
-📌 Future Improvements  
+### 2) Run backend
 
-Integrate more advanced AI models  
+```bash
+cd backend
+npm start
+```
 
-Implement user profile customization  
+### 3) Run frontend
 
-Improve UI/UX with animations and themes  
+```bash
+cd frontend
+npm run dev
+```
 
-🙌 Acknowledgment  
+Open `http://localhost:5173`
 
-This project was developed to explore full-stack development and AI integration using the MERN stack, inspired by modern conversational AI platforms.
+## Deployment
+
+### Backend (Render)
+
+1. Create a new Web Service from this repo.
+2. Set Root Directory to `backend`.
+3. Set Start Command to `npm start`.
+4. Add backend environment variables.
+5. Deploy.
+
+### Frontend (Vercel)
+
+1. Import repo in Vercel.
+2. Set Root Directory to `frontend`.
+3. Add env var:
+   - `VITE_API_URL=https://your_url.onrender.com`
+4. Deploy.
+
+## API Overview
+
+### User Routes
+
+- `POST /api/v1/user/signup/request-otp`
+- `POST /api/v1/user/signup/verify-otp`
+- `POST /api/v1/user/login`
+- `GET /api/v1/user/logout`
+
+### Chat Routes (Auth Required)
+
+- `POST /api/v1/deepseekai/promt`
+- `GET /api/v1/deepseekai/chats`
+- `GET /api/v1/deepseekai/chat/:chatId/messages`
+- `DELETE /api/v1/deepseekai/chat/:chatId`
+
+## Future Improvements
+
+- Add message streaming responses
+- Add richer profile management
+- Add role-based moderation and safety filters
+- Add unit and integration tests
