@@ -38,6 +38,17 @@ const sendOtpEmail = async (email, otp) => {
     });
     return { delivered: true };
   } catch (error) {
+    console.log("SMTP send failed:", {
+      message: error?.message,
+      code: error?.code,
+      response: error?.response,
+      responseCode: error?.responseCode,
+      command: error?.command,
+      host,
+      port,
+      from,
+      to: email,
+    });
     return { delivered: false, reason: error?.message || "Email delivery failed" };
   }
 };
