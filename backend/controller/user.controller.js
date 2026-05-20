@@ -29,13 +29,17 @@ const sendOtpEmail = async (email, otp) => {
     socketTimeout: 20000,
   });
 
-  await transporter.sendMail({
-    from,
-    to: email,
-    subject: "Your OTP for Signup",
-    text: `Your OTP is ${otp}. It expires in 10 minutes.`,
-  });
-  return { delivered: true };
+  try {
+    await transporter.sendMail({
+      from,
+      to: email,
+      subject: "Your OTP for Signup",
+      text: `Your OTP is ${otp}. It expires in 10 minutes.`,
+    });
+    return { delivered: true };
+  } catch (error) {
+    return { delivered: false, reason: error?.message || "Email delivery failed" };
+  }
 };
 
 export const requestSignupOtp = async (req, res) => {
@@ -84,7 +88,8 @@ export const requestSignupOtp = async (req, res) => {
     if (!mailStatus.delivered) {
       return res.status(202).json({
         message:
-          "OTP saved, but email delivery is delayed/failed. Please check SMTP settings and retry.",
+          "OTP created, but email delivery failed. Please verify SMTP settings and try again.",
+        details: mailStatus.reason || null,
       });
     }
 
@@ -92,7 +97,7 @@ export const requestSignupOtp = async (req, res) => {
       message: "OTP sent successfully",
     });
   } catch (error) {
-    return res.status(500).json({ errors: error?.message || "Failed to send OTP" });
+    return res.status(500).json({ errors: "Failed to send OTP. Please try again." });
   }
 };
 

@@ -3,12 +3,14 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import dns from "dns";
 
 import userRoutes from "./routes/user.route.js";
 import promtRoutes from "./routes/promt.route.js";
 import { User } from "./model/user.model.js";
 
 dotenv.config();
+dns.setDefaultResultOrder("ipv4first");
 
 const app = express();
 const port = process.env.PORT || 4001;
